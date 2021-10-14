@@ -1,151 +1,158 @@
-import React, { useState, useEffect } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, } from "react";
+import { Button, Text, TextInput, View } from "react-native";
 
-const Quiz2 = (props) => {
-  const [info, setInfo] = useState({name:'',email:''});
-  const [name, setName] = useState('');
-  const [email,setEmail] = useState('')
+const MathQuiz = ({ n }) => {
+    const [debugging, setDebugging] = useState(false)
 
-  // when the component is loaded it gets the data from storage
-  // and updatges the info, name, and email fields
-  // but this is the only time useEffect is called
-  useEffect(() => {getData()}
-           ,[])
+    const [num1, setNum1] = useState(Math.floor(Math.random() * (n + 1)));
+    const [num2, setNum2] = useState(Math.floor(Math.random() * (n + 1)));
+    const [answer, setAnswer] = useState(num1 * num2);
+    const [input, setInput] = useState();
+    const [isCheck, setIsCheck] = useState(true);
 
-  // getData uses AsyncStorage to access the stored profile info as a string
-  // then it uses JSON.parse to turn that string to a JSON object
-  // finally it uses the set functions for the useState hook to set the
-  // info, email, and name state variables.
-  const getData = async () => {
-        try {
-          // the '@profile_info' can be any string
-          const jsonValue = await AsyncStorage.getItem('@profile_info')
-          let data = null
-          if (jsonValue!=null) {
-            data = JSON.parse(jsonValue)
-            setInfo(data)
-            setName(data.name)
-            setEmail(data.email)
-            console.log('just set Info, Name and Email')
-          } else {
-            console.log('just read a null value from Storage')
-            setInfo({})
-            setName("")
-            setEmail("")
-          }
+    const [numAns, setNumAns] = useState(0);
+    const [numInp, setNumInp] = useState(0);
+    const [corPer, setCorPer] = useState(0);
+
+    const [result, setResult] = useState('waiting')
+    const [output, setOutput] = useState()
+    const [marginL, setMarginL] = useState(0)
 
 
-        } catch(e) {
-          console.log("error in getData ")
-          console.dir(e)
-          // error reading value
+    const DebugView = ({ debugging }) => {
+        if (debugging) {
+            return (
+                <View style={{ alignItems: "flex-start" }} >
+                    <Button
+                        style={{ paddingVertical: 32 }}
+                        title="HIDE DEDUG INFO"
+                        color="green"
+                        onPress={() => setDebugging(false)}
+                    />
+                    <View>
+                        <Text style={{ marginLeft: 5 }}>
+                            x: {num1}
+                        </Text>
+                        <Text style={{ marginLeft: 5 }}>
+                            y: {num2}
+                        </Text>
+                        <Text>
+                            answer: {input}
+                        </Text>
+                        <Text style={{ marginLeft: 5 }}>
+                            correct: {numAns}
+                        </Text>
+                        <Text style={{ marginLeft: 5 }}>
+                            answered: {numInp}
+                        </Text>
+                        <Text style={{ marginLeft: 5 }}>
+                            result: {result}
+                        </Text>
+                    </View>
+                </View>
+            )
+        } else {
+            return (
+                <View style={{ alignItems: "flex-start" }}>
+                    <Button
+                        style={{ paddingVertical: 32 }}
+                        title="SHOW DEDUG INFO"
+                        color="green"
+                        onPress={() => setDebugging(true)}
+                    />
+                </View>
+            )
         }
-  }
-
-  // storeData converts the value stored in the info variable to a string
-  // which is then writes into local storage using AsyncStorage.setItem.
-  const storeData = async (value) => {
-        try {
-          const jsonValue = JSON.stringify(value)
-          await AsyncStorage.setItem('@profile_info', jsonValue)
-          console.log('just stored '+jsonValue)
-        } catch (e) {
-          console.log("error in storeData ")
-          console.dir(e)
-          // saving error
-        }
-  }
-
-  // clearAll calls AsyncStorate.clear to remove all local storage for this app
-  // we could be more selective and only remove the profile_info, but for
-  // debugging it is good to remove everything
-  const clearAll = async () => {
-        try {
-          console.log('in clearData')
-          await AsyncStorage.clear()
-        } catch(e) {
-          console.log("error in clearData ")
-          console.dir(e)
-          // clear error
-        }
-  }
-
-
-
-
-      return (
-            <View style={styles.container}>
-              <Text style={styles.header}>
-                 Math Quiz for numbers between 0 and 12
-              </Text>
-              <Text style={styles.body}>
-                 Calculate the product of the following two numbers:
-              </Text>
-              <TextInput
-                    style={styles.textinput}
-                    placeholder="name"
-                    onChangeText={text => {
-                      setName(text)
-                    }}
-                    value={name}
-                />
-              <Button
-                    color='red' title='Save Profile to Memory'
-                    onPress = {() => {
-                         console.log("saving profile");
-                         const theInfo = {name:name,email:email}
-                         console.log(`theInfo=${theInfo}`)
-                         setInfo(theInfo)
-                         console.log('data='+JSON.stringify(theInfo))
-                         storeData(theInfo)
-                       }}
-                />
-              <Button
-                  color='green' title='Clear memory'
-                  onPress = {() => {
-                        console.log('clearing memory');
-                        clearAll()
-                      }}
-                />
-              <Button
-                  color='blue' title='Load Profile from Memory'
-                  onPress = {() => {
-                        console.log('loading profile');
-                        getData()
-                      }}
-                />
-              <Text>
-               name={name} email={email} info={JSON.stringify(info)}
-              </Text>
-
-            </View>
-      );
     }
-  const styles = StyleSheet.create ({
-    container: {
-      flex: 1,
-      flexDirection:'column',
-      backgroundColor: '#fff',
-      alignItems: 'center',
-    //   justifyContent: 'center',
-    },
-    textinput:{
-      margin:20,
-      fontSize:20
-    },
-    header: {
-      fontSize:40,
-      color:'blue'
-    },
-    body: {
-        fontSize:30,
-        color:'black'
-    },
-    rowContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-  });
 
-export default Quiz2;
+    const next = () => {
+        setNum1(Math.floor(Math.random() * (n + 1)))
+        setNum2(Math.floor(Math.random() * (n + 1)))
+        setAnswer(num1*num2)
+        setInput("")
+        setIsCheck(true)
+        setResult("waiting")
+    }
+
+    const checkAnswer = () => {
+        var ans = num1*num2
+        setIsCheck(false)
+        setNumInp(numInp + 1)
+        if (input == (num1*num2)) {
+            setNumAns(numAns + 1)
+            setOutput("Correct!!")
+            setResult("correct")
+            setMarginL(0)
+        } else {
+            setOutput("Sorry, answer was " + ans.toString() + ", try again!")
+            setResult("incorrect")
+            setMarginL(150)
+        }
+        var correctPercent = numAns / numInp * 100
+        correctPercent = Math.round(correctPercent * 10)/10
+        setCorPer(numAns / numInp * 100)
+    }
+
+    const ShowHide = ({isCheck}) => {
+        if (isCheck) {
+            return (
+                <View style={{ alignItems: 'flex-start', }}>
+                    <Button
+                        title="CHECK ANSWER"
+                        color="red"
+                        onPress={() => checkAnswer()}
+                    />
+                </View>)
+        } else {
+            return (
+                <View style={{flexDirection: 'column', flex: 3}}>
+                    <View>
+                        <Text style={{ color: 'red', fontSize: 40 }}>
+                            {output}
+                        </Text>
+                    </View>
+                    <View style={{ marginLeft: marginL, alignItems:'flex-start'}}>
+                        <Button
+                            title="NEXT QUESTION"
+                            color="green"
+                            onPress={() => next()}
+                        />
+                    </View>
+                </View>)
+        }
+    }
+
+
+
+    return (
+        <View style={{ flexDirection: "column" }}>
+            <Text style={{ color: "blue", fontSize: 50, fontWeight:'bold' }}>
+                Math Quiz for numbers between 0 and {n}
+            </Text>
+            <Text style={{ color: "black", fontSize: 40 }}>
+                Calculate the product of the following two numbers:
+            </Text>
+            <Text style={{ color: "black", fontSize: 50, marginLeft: 25, alignItems: 'center' }}>
+                {num1} * {num2} =
+                <TextInput
+                    style={{ color: "black", fontSize: 50, width: 540 }}
+                    placeholder="???"
+                    onChangeText={text => { setInput(text) }}
+                    value={input}
+                />
+            </Text>
+            <ShowHide isCheck={isCheck}/>
+            <Text>
+                Correct: {numAns}
+            </Text>
+            <Text>
+                Answered: {numInp}
+            </Text>
+            <Text>
+                Percent Correct: {corPer}
+            </Text>
+            <DebugView debugging={debugging} />
+        </View>
+    )
+}
+export default MathQuiz;
