@@ -2,6 +2,7 @@ import AboutScreen from "./screens/AboutScreen";
 import HomeScreen from "./screens/HomeScreen";
 import ManageScreen from "./screens/ManageScreen";
 import FoodScreen from "./screens/FoodScreen";
+import LoginScreen from "./screens/LoginScreen";
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -27,6 +28,7 @@ export default function App() {
         <Stack.Screen name="About" component={AboutScreen} />
         <Stack.Screen name="Manage" component={ManageScreen} />
         <Stack.Screen name="Food" component={FoodScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
